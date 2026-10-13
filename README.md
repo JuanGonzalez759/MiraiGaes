@@ -41,7 +41,7 @@ npm run build
 ```
 
 Vite está configurado para reenviar las peticiones `/api` a `http://127.0.0.1:8000`.
-El backend responde al endpoint de comprobación `GET /api/health`.
+El backend responde a `GET /api/health` y `GET /api/games`.
 
 ## Desarrollo del backend
 
@@ -60,4 +60,5 @@ No guardes las credenciales en archivos versionados. En otra terminal, comprueba
 la API con `Invoke-RestMethod http://127.0.0.1:8000/api/health` o abre esa URL
 en el navegador. Debe devolver `status: ok`, `api: up` y `database: connected`.
 
-El backend aún no implementa cuentas, catálogo, carrito, pedidos ni pagos.
+El backend todavía no implementa cuentas, autenticación, carrito, pedidos,
+administración ni pagos.
