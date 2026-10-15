@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/helpers/httpException.php';
 require_once __DIR__ . '/helpers/response.php';
 
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
@@ -11,21 +12,40 @@ $path = $path === '' ? '/' : $path;
 $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
 
 $routes = require __DIR__ . '/routes/api.php';
-$routeKey = $method . ' ' . $path;
+$routeHandler = null;
+$routeParameters = [];
+$pathMatchesRoute = false;
 
-if (!isset($routes[$routeKey])) {
-    $allowedMethods = [];
+foreach ($routes as $routeKey => $handler) {
+    [$registeredMethod, $registeredPath] = explode(' ', $routeKey, 2);
+    $parameters = matchRoutePath($registeredPath, $path);
 
-    foreach (array_keys($routes) as $registeredRoute) {
-        [$registeredMethod, $registeredPath] = explode(' ', $registeredRoute, 2);
-
-        if ($registeredPath === $path) {
-            $allowedMethods[] = $registeredMethod;
-        }
+    if ($parameters === null) {
+        continue;
     }
 
-    if ($allowedMethods !== []) {
-        header('Allow: ' . implode(', ', $allowedMethods));
+    $pathMatchesRoute = true;
+
+    if ($registeredMethod === $method) {
+        $routeHandler = $handler;
+        $routeParameters = $parameters;
+        break;
+    }
+}
+
+if ($routeHandler === null) {
+    if ($pathMatchesRoute) {
+        $allowedMethods = [];
+
+        foreach ($routes as $routeKey => $_handler) {
+            [$registeredMethod, $registeredPath] = explode(' ', $routeKey, 2);
+
+            if (matchRoutePath($registeredPath, $path) !== null) {
+                $allowedMethods[] = $registeredMethod;
+            }
+        }
+
+        header('Allow: ' . implode(', ', array_unique($allowedMethods)));
         jsonResponse(405, [
             'status' => 'error',
             'message' => 'Method not allowed.',
@@ -39,10 +59,14 @@ if (!isset($routes[$routeKey])) {
 }
 
 try {
-    $handler = $routes[$routeKey];
-    jsonResponse(200, $handler());
+    jsonResponse(200, $routeHandler($routeParameters));
+} catch (HttpException $exception) {
+    jsonResponse($exception->statusCode, [
+        'status' => 'error',
+        'message' => $exception->getMessage(),
+    ]);
 } catch (PDOException $exception) {
-    error_log('Database connection failed: ' . $exception->getMessage());
+    error_log('Database operation failed: ' . $exception->getMessage());
 
     jsonResponse(503, [
         'status' => 'error',
@@ -57,4 +81,31 @@ try {
         'status' => 'error',
         'message' => 'Internal server error.',
     ]);
+}
+
+function matchRoutePath(string $routePath, string $requestPath): ?array
+{
+    $routeSegments = explode('/', trim($routePath, '/'));
+    $requestSegments = explode('/', trim($requestPath, '/'));
+
+    if (count($routeSegments) !== count($requestSegments)) {
+        return null;
+    }
+
+    $parameters = [];
+
+    foreach ($routeSegments as $index => $routeSegment) {
+        if (
+            preg_match('/^\{([a-zA-Z][a-zA-Z0-9_]*)\}$/', $routeSegment, $matches) === 1
+        ) {
+            $parameters[$matches[1]] = $requestSegments[$index];
+            continue;
+        }
+
+        if ($routeSegment !== $requestSegments[$index]) {
+            return null;
+        }
+    }
+
+    return $parameters;
 }

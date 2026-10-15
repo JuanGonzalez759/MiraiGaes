@@ -16,7 +16,16 @@ return [
     },
     'GET /api/games' => static function (): array {
         return [
-            'games' => getActiveGames(),
+            'games' => getActiveGames($_GET),
         ];
+    },
+    'GET /api/games/{id}' => static function (array $parameters): array {
+        return getActiveGame($parameters);
+    },
+    'GET /api/categories' => static function (): array {
+        return getAvailableCategories();
+    },
+    'GET /api/platforms' => static function (): array {
+        return getAvailablePlatforms();
     },
 ];
