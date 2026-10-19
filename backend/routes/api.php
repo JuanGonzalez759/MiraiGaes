@@ -3,8 +3,24 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../controllers/gamesController.php';
+require_once __DIR__ . '/../controllers/authController.php';
 
 return [
+    'GET /api/auth/csrf' => static function (): array {
+        return getCsrfToken();
+    },
+    'POST /api/auth/register' => static function (): ApiResponse {
+        return registerAccount();
+    },
+    'POST /api/auth/login' => static function (): array {
+        return loginAccount();
+    },
+    'GET /api/auth/me' => static function (): array {
+        return getAuthenticatedProfile();
+    },
+    'POST /api/auth/logout' => static function (): array {
+        return logoutAccount();
+    },
     'GET /api/health' => static function (): array {
         databaseConnection();
 

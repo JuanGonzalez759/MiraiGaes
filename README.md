@@ -45,14 +45,24 @@ El backend responde a `GET /api/health` y `GET /api/games`.
 
 ## Desarrollo del backend
 
-Desde la raíz del repositorio, configura las variables de entorno en PowerShell:
+Para desarrollo local, crea `backend/.env` (no se sube a Git) con la
+configuración de MySQL y el origen permitido:
+
+```dotenv
+MYSQL_HOST=127.0.0.1
+MYSQL_PORT=3306
+MYSQL_DATABASE=mirai_games
+MYSQL_USER=tu_usuario_mysql
+MYSQL_PASSWORD=tu_contrasena_mysql
+APP_ORIGIN=http://127.0.0.1:5173
+```
+
+Sustituye los valores de usuario y contraseña por los de tu entorno local; no
+uses credenciales reales en archivos versionados. También puedes configurar
+estas variables en el entorno del sistema, que tiene prioridad sobre `.env`.
+Desde la raíz del repositorio, inicia PHP:
 
 ```powershell
-$env:MYSQL_HOST = "127.0.0.1"
-$env:MYSQL_PORT = "3306"
-$env:MYSQL_DATABASE = "mirai_games"
-$env:MYSQL_USER = "tu_usuario_mysql"
-$env:MYSQL_PASSWORD = "tu_contrasena_mysql"
 php -S 127.0.0.1:8000 -t backend backend/index.php
 ```
 
@@ -60,5 +70,10 @@ No guardes las credenciales en archivos versionados. En otra terminal, comprueba
 la API con `Invoke-RestMethod http://127.0.0.1:8000/api/health` o abre esa URL
 en el navegador. Debe devolver `status: ok`, `api: up` y `database: connected`.
 
-El backend todavía no implementa cuentas, autenticación, carrito, pedidos,
-administración ni pagos.
+La autenticación usa sesiones PHP y cookies `HttpOnly`. Para probar el frontend,
+inicia Vite en otra terminal dentro de `frontend/` y abre
+`http://127.0.0.1:5173` (el origen debe coincidir con `APP_ORIGIN`). Las rutas
+disponibles son `/api/auth/csrf`, `/api/auth/register`, `/api/auth/login`,
+`/api/auth/me` y `/api/auth/logout`. Las solicitudes POST requieren el token
+CSRF obtenido en la primera ruta. El backend aún no implementa carrito, pedidos,
+administración del catálogo ni pagos.

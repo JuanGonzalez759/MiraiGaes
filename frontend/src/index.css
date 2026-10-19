@@ -28,6 +28,7 @@ html {
 }
 
 body {
+  min-width: 1384px;
   min-height: 100vh;
   margin: 0;
   background: var(--color-bg);
@@ -50,7 +51,7 @@ a:focus-visible {
 }
 
 .site-shell {
-  width: min(100% - 64px, 1320px);
+  width: 1320px;
   margin: 0 auto;
 }
 
@@ -59,6 +60,7 @@ a:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 22px;
   border-bottom: 1px solid var(--color-line);
 }
 
@@ -90,6 +92,11 @@ a:focus-visible {
 
 .site-header__tagline,
 .site-header__status,
+.account-nav,
+.account-nav__loading,
+.account-nav button,
+.account-nav a,
+.logout-error,
 .hero__eyebrow,
 .hero__link,
 .hero__side-note,
@@ -111,6 +118,44 @@ a:focus-visible {
 .site-header__tagline,
 .site-header__status {
   color: var(--color-muted);
+}
+
+.account-nav {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  white-space: nowrap;
+}
+
+.account-nav a,
+.account-nav button,
+.account-nav__loading {
+  color: #d7d0d8;
+  font-size: 9px;
+}
+
+.account-nav a:hover,
+.account-nav button:hover {
+  color: #91eaf0;
+}
+
+.account-nav button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.account-nav .account-nav__register {
+  padding: 9px 10px;
+  border: 1px solid rgba(255, 77, 121, 0.55);
+  color: var(--color-accent);
+}
+
+.logout-error {
+  margin: 10px 0;
+  color: #ff9baa;
+  font-size: 12px;
 }
 
 .site-header__status {
@@ -729,6 +774,151 @@ a:focus-visible {
   cursor: pointer;
 }
 
+.account-page {
+  min-height: 620px;
+  padding: 72px 0 90px;
+}
+
+.account-panel {
+  width: 540px;
+  margin: 0 auto;
+  padding: 38px;
+  border: 1px solid var(--color-line);
+  background:
+    linear-gradient(145deg, rgba(255, 77, 121, 0.06), transparent 55%),
+    var(--color-panel);
+}
+
+.account-panel h1 {
+  margin: 14px 0 9px;
+  font-size: 42px;
+  line-height: 1.05;
+  letter-spacing: -0.06em;
+}
+
+.account-panel__intro {
+  margin: 0 0 26px;
+  color: var(--color-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.account-form {
+  display: grid;
+  gap: 17px;
+}
+
+.account-form label {
+  display: grid;
+  gap: 8px;
+}
+
+.account-form label > span,
+.profile-details dt {
+  color: #91eaf0;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+
+.account-form input {
+  width: 100%;
+  height: 45px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0;
+  background: #100d11;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 14px;
+}
+
+.account-form input:focus {
+  border-color: #65d9e2;
+  outline: 1px solid #65d9e2;
+}
+
+.account-form small {
+  color: var(--color-muted);
+  font-size: 11px;
+}
+
+.account-submit {
+  min-height: 46px;
+  margin-top: 4px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--color-accent);
+  background: rgba(255, 77, 121, 0.12);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+}
+
+.account-submit:hover:not(:disabled) {
+  background: rgba(255, 77, 121, 0.24);
+}
+
+.account-submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.account-submit--link {
+  width: 100%;
+}
+
+.account-switch {
+  margin: 22px 0 0;
+  color: var(--color-muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+.account-switch a {
+  color: #91eaf0;
+}
+
+.form-message {
+  margin: 0 0 17px;
+  padding: 12px;
+  border: 1px solid var(--color-line);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.form-message--error {
+  border-color: rgba(255, 77, 121, 0.5);
+  color: #ff9baa;
+}
+
+.form-message--success {
+  border-color: rgba(143, 225, 167, 0.45);
+  color: #8fe1a7;
+}
+
+.profile-details {
+  margin: 28px 0 0;
+  border-top: 1px solid var(--color-line);
+}
+
+.profile-details > div {
+  padding: 16px 0;
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 14px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.profile-details dd {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
 .loading-mark {
   width: 28px;
   height: 28px;
@@ -771,167 +961,6 @@ a:focus-visible {
 @keyframes spin {
   to {
     transform: rotate(360deg);
-  }
-}
-
-@media (max-width: 900px) {
-  .hero__sun {
-    right: 2%;
-    opacity: 0.55;
-  }
-
-  .hero__content {
-    z-index: 2;
-  }
-
-  .game-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .catalog-filters {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .filter-field--search {
-    grid-column: span 2;
-  }
-
-  .filter-clear {
-    justify-self: start;
-  }
-
-  .game-detail {
-    grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr);
-    gap: 28px;
-    padding: 20px;
-  }
-}
-
-@media (max-width: 600px) {
-  .site-shell {
-    width: min(100% - 36px, 1320px);
-  }
-
-  .site-header {
-    height: 68px;
-  }
-
-  .site-header__tagline {
-    display: none;
-  }
-
-  .site-header__status {
-    font-size: 8px;
-  }
-
-  .hero {
-    min-height: 440px;
-  }
-
-  .hero__content {
-    padding: 70px 0;
-  }
-
-  .hero__eyebrow {
-    font-size: 8px;
-  }
-
-  .hero h1 {
-    font-size: clamp(62px, 17vw, 88px);
-  }
-
-  .hero__description {
-    font-size: 13px;
-  }
-
-  .desktop-break {
-    display: none;
-  }
-
-  .hero__sun {
-    width: 210px;
-    top: auto;
-    right: -50px;
-    bottom: -7px;
-    transform: none;
-    opacity: 0.35;
-  }
-
-  .hero__side-note {
-    top: 18px;
-    font-size: 8px;
-  }
-
-  .hero__vertical {
-    right: -10px;
-    bottom: 22px;
-    font-size: 8px;
-  }
-
-  .catalog {
-    padding: 56px 0 68px;
-  }
-
-  .section-heading {
-    align-items: start;
-    gap: 16px;
-  }
-
-  .catalog-count {
-    max-width: 92px;
-    line-height: 1.6;
-    text-align: right;
-  }
-
-  .game-grid {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-
-  .catalog-filters {
-    grid-template-columns: 1fr;
-    padding: 13px;
-  }
-
-  .filter-field--search {
-    grid-column: auto;
-  }
-
-  .game-card__cover {
-    height: 225px;
-  }
-
-  .game-detail {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 15px;
-  }
-
-  .game-detail__cover .game-card__cover {
-    max-height: 390px;
-  }
-
-  .game-detail__content {
-    padding: 5px 0;
-  }
-
-  .game-detail__content h1 {
-    font-size: 40px;
-  }
-
-  .game-detail__facts > div {
-    grid-template-columns: 100px minmax(0, 1fr);
-    gap: 10px;
-  }
-
-  .site-footer {
-    min-height: 78px;
-    flex-wrap: wrap;
-    padding: 18px 0;
-  }
-
-  .site-footer > p {
-    display: none;
   }
 }
 

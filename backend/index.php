@@ -2,9 +2,13 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/config/environment.php';
+loadEnvironmentFile(__DIR__ . '/.env');
+
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/helpers/httpException.php';
 require_once __DIR__ . '/helpers/response.php';
+require_once __DIR__ . '/helpers/session.php';
 
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 $path = is_string($path) ? rtrim($path, '/') : '/';
@@ -59,7 +63,19 @@ if ($routeHandler === null) {
 }
 
 try {
-    jsonResponse(200, $routeHandler($routeParameters));
+    if (!in_array($method, ['GET', 'HEAD', 'OPTIONS'], true)) {
+        requireSameOriginRequest();
+        startAppSession();
+        requireValidCsrfToken();
+    }
+
+    $result = $routeHandler($routeParameters);
+
+    if ($result instanceof ApiResponse) {
+        jsonResponse($result->statusCode, $result->payload);
+    }
+
+    jsonResponse(200, $result);
 } catch (HttpException $exception) {
     jsonResponse($exception->statusCode, [
         'status' => 'error',
