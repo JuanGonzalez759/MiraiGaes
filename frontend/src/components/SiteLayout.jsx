@@ -30,6 +30,7 @@ function SiteLayout({ children }) {
           ) : user ? (
             <>
               <a href="/profile">MI PERFIL</a>
+              <a href="/cart">CARRITO</a>
               <button type="button" onClick={handleLogout}>CERRAR SESIÓN</button>
             </>
           ) : (

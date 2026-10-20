@@ -41,7 +41,10 @@ npm run build
 ```
 
 Vite está configurado para reenviar las peticiones `/api` a `http://127.0.0.1:8000`.
-El backend responde a `GET /api/health` y `GET /api/games`.
+El backend incluye `GET /api/health`, el catálogo y sus filtros, autenticación
+con sesión y los endpoints autenticados del carrito:
+`GET /api/cart`, `POST /api/cart/items`, `PATCH /api/cart/items/{game_id}` y
+`DELETE /api/cart/items/{game_id}`.
 
 ## Desarrollo del backend
 
@@ -72,8 +75,8 @@ en el navegador. Debe devolver `status: ok`, `api: up` y `database: connected`.
 
 La autenticación usa sesiones PHP y cookies `HttpOnly`. Para probar el frontend,
 inicia Vite en otra terminal dentro de `frontend/` y abre
-`http://127.0.0.1:5173` (el origen debe coincidir con `APP_ORIGIN`). Las rutas
-disponibles son `/api/auth/csrf`, `/api/auth/register`, `/api/auth/login`,
-`/api/auth/me` y `/api/auth/logout`. Las solicitudes POST requieren el token
-CSRF obtenido en la primera ruta. El backend aún no implementa carrito, pedidos,
+`http://127.0.0.1:5173` (el origen debe coincidir con `APP_ORIGIN`). Las rutas de autenticación son `/api/auth/csrf`, `/api/auth/register`,
+`/api/auth/login`, `/api/auth/me` y `/api/auth/logout`. Las solicitudes que
+modifican datos requieren el token CSRF obtenido en la primera ruta y un usuario
+autenticado cuando se trata del carrito. El backend aún no implementa pedidos,
 administración del catálogo ni pagos.
