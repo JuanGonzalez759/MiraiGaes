@@ -1,6 +1,7 @@
 # Dependencies and generated frontend files
 frontend/node_modules/
 frontend/dist/
+/backend/vendor/
 
 # Local environment and secrets
 .env

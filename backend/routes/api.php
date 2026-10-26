@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../controllers/gamesController.php';
 require_once __DIR__ . '/../controllers/authController.php';
 require_once __DIR__ . '/../controllers/cartController.php';
+require_once __DIR__ . '/../controllers/ordersController.php';
 
 return [
     'GET /api/auth/csrf' => static function (): array {
@@ -33,6 +34,21 @@ return [
     },
     'DELETE /api/cart/items/{game_id}' => static function (array $parameters): array {
         return removeCartItem($parameters);
+    },
+    'POST /api/checkout/session' => static function (): array {
+        return createCheckoutSession();
+    },
+    'POST /api/orders/{id}/checkout-session' => static function (array $parameters): array {
+        return resumeOrderCheckout($parameters);
+    },
+    'GET /api/orders' => static function (): array {
+        return getOrderHistory();
+    },
+    'GET /api/orders/{id}' => static function (array $parameters): array {
+        return getOrderDetails($parameters);
+    },
+    'POST /api/webhooks/stripe' => static function (): array {
+        return handleStripeWebhook();
     },
     'GET /api/health' => static function (): array {
         databaseConnection();

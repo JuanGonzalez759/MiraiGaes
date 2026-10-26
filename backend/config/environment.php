@@ -53,3 +53,44 @@ function loadEnvironmentFile(string $filePath): void
         $_SERVER[$name] = $value;
     }
 }
+
+function readEnvironmentFileValue(string $filePath, string $name): ?string
+{
+    if (!is_file($filePath) || !is_readable($filePath)) {
+        return null;
+    }
+
+    $lines = file($filePath, FILE_IGNORE_NEW_LINES);
+
+    if ($lines === false) {
+        return null;
+    }
+
+    foreach ($lines as $line) {
+        $line = trim($line);
+
+        if ($line === '' || str_starts_with($line, '#')) {
+            continue;
+        }
+
+        $separatorPosition = strpos($line, '=');
+
+        if ($separatorPosition === false || trim(substr($line, 0, $separatorPosition)) !== $name) {
+            continue;
+        }
+
+        $value = trim(substr($line, $separatorPosition + 1));
+
+        if (
+            strlen($value) >= 2
+            && (($value[0] === '"' && $value[strlen($value) - 1] === '"')
+                || ($value[0] === "'" && $value[strlen($value) - 1] === "'"))
+        ) {
+            return substr($value, 1, -1);
+        }
+
+        return $value;
+    }
+
+    return null;
+}

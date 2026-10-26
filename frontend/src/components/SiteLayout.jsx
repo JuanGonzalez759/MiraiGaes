@@ -31,6 +31,7 @@ function SiteLayout({ children }) {
             <>
               <a href="/profile">MI PERFIL</a>
               <a href="/cart">CARRITO</a>
+              <a href="/orders">PEDIDOS</a>
               <button type="button" onClick={handleLogout}>CERRAR SESIÓN</button>
             </>
           ) : (

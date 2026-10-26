@@ -63,7 +63,9 @@ if ($routeHandler === null) {
 }
 
 try {
-    if (!in_array($method, ['GET', 'HEAD', 'OPTIONS'], true)) {
+    $isStripeWebhook = $method === 'POST' && $path === '/api/webhooks/stripe';
+
+    if (!in_array($method, ['GET', 'HEAD', 'OPTIONS'], true) && !$isStripeWebhook) {
         requireSameOriginRequest();
         startAppSession();
         requireValidCsrfToken();

@@ -3,6 +3,7 @@ import GameCover from '../components/GameCover.jsx'
 import SiteLayout from '../components/SiteLayout.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { getCart, removeCartItem, updateCartItem } from '../services/cartService.js'
+import { startCheckout } from '../services/ordersService.js'
 
 const priceFormatter = new Intl.NumberFormat('es-ES', {
   style: 'currency',
@@ -15,6 +16,7 @@ function CartPage() {
   const [status, setStatus] = useState('loading')
   const [errorMessage, setErrorMessage] = useState('')
   const [busyGameId, setBusyGameId] = useState(null)
+  const [isCheckingOut, setIsCheckingOut] = useState(false)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -60,6 +62,27 @@ function CartPage() {
       setBusyGameId(null)
     }
   }
+
+  async function handleCheckout() {
+    if (!cart) return
+
+    setIsCheckingOut(true)
+    setErrorMessage('')
+
+    try {
+      await startCheckout(cart, csrfToken)
+    } catch (error) {
+      setErrorMessage(error.status === 401
+        ? 'Tu sesión ha caducado. Inicia sesión de nuevo para finalizar la compra.'
+        : error.message)
+      setIsCheckingOut(false)
+    }
+  }
+
+  const canCheckout = Boolean(
+    cart?.items.length
+    && cart.items.every((item) => item.is_active && item.quantity <= item.stock),
+  )
 
   const pageContent = isAuthLoading ? (
     <div className="catalog-message" role="status">
@@ -163,6 +186,14 @@ function CartPage() {
             <span>TOTAL</span>
             <strong>{priceFormatter.format(Number(cart.total))}</strong>
           </div>
+          <button
+            className="cart-checkout-button"
+            type="button"
+            disabled={!canCheckout || isCheckingOut}
+            onClick={handleCheckout}
+          >
+            {isCheckingOut ? 'CONECTANDO CON STRIPE...' : 'FINALIZAR COMPRA'}
+          </button>
           <p>El stock y el precio se volverán a comprobar antes de finalizar la compra.</p>
         </aside>
       </div>
