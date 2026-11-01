@@ -175,7 +175,8 @@ function findOrderByIdempotencyKey(
 function findOrderById(PDO $connection, int $orderId, int $userId): ?array
 {
     $statement = $connection->prepare(
-        'SELECT o.id, o.payment_status, o.inventory_status, o.created_at, o.paid_at,
+        'SELECT o.id, o.user_id, o.stripe_session_id, o.payment_status, o.inventory_status,
+                o.created_at, o.paid_at, o.reservation_expires_at,
                 CAST((
                     SELECT COALESCE(SUM(od.quantity * od.unit_price), 0.00)
                     FROM order_details od
